@@ -11,17 +11,19 @@ import time
 from tqdm import tqdm
 import re
 import os
+from .browser import BrowserManager
 
 def iniciar_driver():
-    """Inicializa e retorna uma instância do driver do Chrome"""
-    chrome_options = Options()
-    chrome_options.add_argument('--headless=new')  # Novo modo headless
-    chrome_options.add_argument('--no-sandbox')
-    chrome_options.add_argument('--disable-dev-shm-usage')
-    chrome_options.add_argument('--start-maximized')
-    chrome_options.add_argument('--window-size=1920,1080')  # Resolução específica
+    """Configura e inicia o driver do Chrome em modo headless"""
+    print("Configurando driver do navegador...")
     
-    driver = webdriver.Chrome(options=chrome_options)
+    driver, browser_name = BrowserManager.setup_driver(headless=True)
+    
+    if driver is None:
+        print(f"Erro ao configurar driver: {browser_name}")
+        return None
+        
+    print(f"Driver configurado com sucesso usando {browser_name}")
     return driver
 
 def converter_numero_br(texto):

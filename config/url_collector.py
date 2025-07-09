@@ -12,6 +12,7 @@ from urllib.parse import urljoin, urlparse
 from collections import defaultdict
 import os
 from datetime import datetime
+from .browser import BrowserManager
 
 # Dicionário com as categorias e suas URLs
 CATEGORIAS = {
@@ -32,16 +33,17 @@ CATEGORIAS = {
     'VITAMINAS': 'https://www.essentialnutrition.com.br/produtos/vitaminas'
 }
 
-def configurar_driver():
-    """Configura e retorna o driver do Selenium"""
-    chrome_options = Options()
-    chrome_options.add_argument("--headless")
-    chrome_options.add_argument("--no-sandbox")
-    chrome_options.add_argument("--disable-dev-shm-usage")
-    chrome_options.add_argument("--window-size=1920,1080")
+def iniciar_driver():
+    """Configura e inicia o driver do navegador em modo headless"""
+    print("Configurando driver do navegador...")
     
-    service = Service(ChromeDriverManager().install())
-    driver = webdriver.Chrome(service=service, options=chrome_options)
+    driver, browser_name = BrowserManager.setup_driver(headless=True)
+    
+    if driver is None:
+        print(f"Erro ao configurar driver: {browser_name}")
+        return None
+        
+    print(f"Driver configurado com sucesso usando {browser_name}")
     return driver
 
 def verificar_pagina_vazia(driver):
@@ -143,7 +145,7 @@ def analisar_duplicatas(resultados):
 
 def coletar_urls():
     """Coleta URLs de todos os produtos do site"""
-    driver = configurar_driver()
+    driver = iniciar_driver()
     if not driver:
         return None
 
